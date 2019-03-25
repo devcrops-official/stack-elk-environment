@@ -1,0 +1,42 @@
+#filebeat.prospectors:
+#- type: log
+#  paths:
+#    - /usr/share/filebeat/logs/*.log
+#
+#setup.template.name: "filebeat-"
+#setup.template.pattern: "filebeat-*"
+#setup.dashboards.enabled: true
+
+filebeat.modules:
+- module: kafka
+
+filebeat.inputs:
+- type: log
+  paths:
+    - /usr/share/filebeat/logs/*.log
+  document_type: json
+  json.message_key: log
+  json.keys_under_root: true
+  json.overwrite_keys: true
+  multiline.pattern: '^MSG|WNG|ERR|\{'
+  multiline.negate: true
+  multiline.match: after
+  tail_files: true
+#  processors:
+#  - add_docker_metadata: ~
+
+setup.kibana:
+  host: "kibana:5601"
+  username: elastic
+  password: youpassword
+
+output.kafka:
+  hosts: ["kafka1:9092"]
+  #codec.format:
+  #   string: '{"hostname": "%{[beat.hostname]}", "containerid": "%{[docker.container.id]}", "containerimage": "%{[docker.container.image]}", "log": %{[log]}}'
+  topic: 'filebeat_locale_dcos'
+  partition.round_robin:
+    reachable_only: false
+  required_acks: 1
+  compression: gzip
+  max_message_bytes: 1000000

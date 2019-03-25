@@ -1,0 +1,1 @@
+BEATHEADER {%{QS:hostname}:%{QS:BEAT_HOST},%{QS:nome}:%{QS:BEAT_SOURCE},%{QS:versione}:%{QS:version}}
